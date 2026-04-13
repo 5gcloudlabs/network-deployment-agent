@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+boto3
+pyyaml
+jinja2
+kubernetes
+chainlit
+httpx
+python-dotenv

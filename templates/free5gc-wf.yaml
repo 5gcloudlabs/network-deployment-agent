@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  name: free5gc-init-workflow
+  namespace: argo
+spec:
+  serviceAccountName: argo-workflow
+  entrypoint: free5gc
+  templates:
+    - name: free5gc
+      resource:
+        action: create
+        manifest: |
+          apiVersion: argoproj.io/v1alpha1
+          kind: Application
+          metadata:
+            name: free5gc-init
+            namespace: argocd
+            finalizers:
+              - resources-finalizer.argocd.argoproj.io
+          spec:
+            project: default
+            source:
+              repoURL: https://github.com/5g-cloud-labs/new-test-2.git
+              targetRevision: trims
+              path: 5g/argocd-apps/free5gc-app
+              plugin:
+                name: envsubst
+                env:
+                  - name: MCC
+                    value: "{{ mcc }}"
+                  - name: MNC
+                    value: "{{ mnc }}"
+            destination:
+              server: https://kubernetes.default.svc
+              namespace: free5gc
+            syncPolicy:
+              automated:
+                prune: true
+                selfHeal: true
