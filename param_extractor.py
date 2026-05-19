@@ -2,25 +2,34 @@ import os
 import boto3
 import json
 
-AWS_REGION = os.environ.get("AWS_DEFAULT_REGION")
+BEDROCK_REGION = os.environ.get("BEDROCK_REGION") or os.environ.get("AWS_DEFAULT_REGION")
 BEDROCK_MODEL_ID = os.environ.get("BEDROCK_MODEL_ID", "anthropic.claude-3-haiku-20240307-v1:0")
 
-session = boto3.Session(region_name=AWS_REGION)
+session = boto3.Session(region_name=BEDROCK_REGION)
 client = session.client("bedrock-runtime")
+
+
+def _parse_json_response(text):
+    """Extract JSON from model response, handling markdown code fences."""
+    text = text.strip()
+    if text.startswith("```"):
+        text = text.split("\n", 1)[-1].rsplit("```", 1)[0]
+    try:
+        return json.loads(text)
+    except (json.JSONDecodeError, ValueError):
+        return {}
 
 
 def extract_params(user_message, expected_params, current_params=None):
 
-    prompt = f"""
-Extract the following parameters from the user input.
+    prompt = f"""Extract parameters from the user input below.
 
-Parameters: {expected_params}
+Expected parameters: {expected_params}
 
-Return JSON only.
+User input: {user_message}
 
-User input:
-{user_message}
-"""
+Return ONLY a JSON object with the extracted values. No explanation, no markdown, no code fences.
+Example: if expected is ["mcc", "mnc"] and user says "602 02", return: {{"mcc": "602", "mnc": "02"}}"""
 
     body = {
         "anthropic_version": "bedrock-2023-05-31",
@@ -38,10 +47,5 @@ User input:
     )
 
     result = json.loads(response["body"].read())
-
     text = result["content"][0]["text"]
-
-    try:
-        return json.loads(text)
-    except:
-        return {}
+    return _parse_json_response(text)
