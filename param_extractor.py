@@ -3,7 +3,7 @@ import boto3
 import json
 
 BEDROCK_REGION = os.environ.get("BEDROCK_REGION") or os.environ.get("AWS_DEFAULT_REGION")
-BEDROCK_MODEL_ID = os.environ.get("BEDROCK_MODEL_ID", "anthropic.claude-3-haiku-20240307-v1:0")
+BEDROCK_MODEL_ID = os.environ.get("BEDROCK_MODEL_ID")
 
 session = boto3.Session(region_name=BEDROCK_REGION)
 client = session.client("bedrock-runtime")
