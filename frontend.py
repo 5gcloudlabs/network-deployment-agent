@@ -3,9 +3,9 @@ import os
 import chainlit as cl
 import httpx
 
-BACKEND_URL = os.environ.get("BACKEND_URL", "http://localhost:8000")
+BACKEND_URL = os.environ.get("BACKEND_URL")
 POLL_INTERVAL = int(os.environ.get("POLL_INTERVAL", "1"))
-DOMAIN_NAME = os.environ.get("DOMAIN_NAME", "5gcloudlabs.org")
+DOMAIN_NAME = os.environ.get("DOMAIN_NAME")
 
 STATUS_TRIGGERS = {"status", "check status", "deployment status", "show status"}
 TEST_KEYWORDS = {"test", "validate", "ping", "latency"}
