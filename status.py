@@ -1,6 +1,13 @@
+import os
 import subprocess
 import json
 from datetime import datetime
+
+CORE_NAMESPACE = os.environ.get("CORE_NAMESPACE")
+UERANSIM_NAMESPACE = os.environ.get("UERANSIM_NAMESPACE")
+PING_INTERFACE = os.environ.get("PING_INTERFACE")
+PING_TARGET = os.environ.get("PING_TARGET")
+PING_COUNT = os.environ.get("PING_COUNT", "10")
 
 def map_status(phase):
     mapping = {
@@ -17,7 +24,7 @@ def free5gc_core_status():
 
     try:
         output = subprocess.check_output([
-            "kubectl", "-n", "free5gc", "get", "pods",
+            "kubectl", "-n", CORE_NAMESPACE, "get", "pods",
             "-l", "nf in (amf, ausf, nrf, nssf, smf, pcf, udm, udr, upf)",
             "-o", "json"
         ]).decode()
@@ -65,7 +72,7 @@ def ueransim_status():
     """Track UE and gNB pod readiness in ueransim namespace."""
     try:
         output = subprocess.check_output([
-            "kubectl", "-n", "ueransim", "get", "pods",
+            "kubectl", "-n", UERANSIM_NAMESPACE, "get", "pods",
             "-l", "component in (gnb, ue)",
             "-o", "json"
         ]).decode()
@@ -94,7 +101,7 @@ def subscriber_provisioning_stdout(tail_lines=50):
     """
     try:
         pods = _parse_json_kubectl([
-            "kubectl", "-n", "free5gc", "get", "pods", "-o", "json"
+            "kubectl", "-n", CORE_NAMESPACE, "get", "pods", "-o", "json"
         ])
 
         candidates = []
@@ -116,7 +123,7 @@ def subscriber_provisioning_stdout(tail_lines=50):
         phase = pod.get("status", {}).get("phase", "Unknown")
 
         logs = subprocess.check_output([
-            "kubectl", "-n", "free5gc", "logs", pod_name,
+            "kubectl", "-n", CORE_NAMESPACE, "logs", pod_name,
             "-c", "subscriber-provisioner", "--tail", str(tail_lines)
         ]).decode()
 
@@ -142,25 +149,25 @@ def subscriber_provisioning_stdout(tail_lines=50):
         }
 
 
-def run_latency_test(count=10, target="google.com"):
-    """Run a ping test from the UE pod's uesimtun0 interface."""
+def run_latency_test():
+    """Run a ping test from the UE pod's tunnel interface."""
     try:
         pod_data = _parse_json_kubectl([
-            "kubectl", "-n", "ueransim", "get", "pods",
+            "kubectl", "-n", UERANSIM_NAMESPACE, "get", "pods",
             "-l", "component=ue",
             "-o", "json"
         ])
 
         items = pod_data.get("items", [])
         if not items:
-            return {"status": "error", "output": "UE pod not found in ueransim namespace."}
+            return {"status": "error", "output": f"UE pod not found in {UERANSIM_NAMESPACE} namespace."}
 
         ue_pod = items[0]["metadata"]["name"]
 
         result = subprocess.run(
             [
-                "kubectl", "-n", "ueransim", "exec", "-i", ue_pod, "--",
-                "ping", "-c", str(count), "-I", "uesimtun0", target,
+                "kubectl", "-n", UERANSIM_NAMESPACE, "exec", "-i", ue_pod, "--",
+                "ping", "-c", PING_COUNT, "-I", PING_INTERFACE, PING_TARGET,
             ],
             capture_output=True,
             timeout=30,
