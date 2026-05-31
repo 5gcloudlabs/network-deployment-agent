@@ -2,6 +2,8 @@ import os
 import boto3
 import json
 
+from prompts import build_extract_prompt
+
 BEDROCK_REGION = os.environ.get("BEDROCK_REGION") or os.environ.get("AWS_DEFAULT_REGION")
 BEDROCK_MODEL_ID = os.environ.get("BEDROCK_MODEL_ID")
 
@@ -22,14 +24,7 @@ def _parse_json_response(text):
 
 def extract_params(user_message, expected_params, current_params=None):
 
-    prompt = f"""Extract parameters from the user input below.
-
-Expected parameters: {expected_params}
-
-User input: {user_message}
-
-Return ONLY a JSON object with the extracted values. No explanation, no markdown, no code fences.
-Example: if expected is ["mcc", "mnc"] and user says "602 02", return: {{"mcc": "602", "mnc": "02"}}"""
+    prompt = build_extract_prompt(expected_params, user_message)
 
     body = {
         "anthropic_version": "bedrock-2023-05-31",
