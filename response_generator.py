@@ -3,6 +3,7 @@ import boto3
 import json
 
 from prompts import build_response_prompt
+from constants import ANTHROPIC_VERSION
 
 BEDROCK_REGION = os.environ.get("BEDROCK_REGION") or os.environ.get("AWS_DEFAULT_REGION")
 BEDROCK_MODEL_ID = os.environ.get("BEDROCK_MODEL_ID")
@@ -16,7 +17,7 @@ def generate_response(data):
     prompt = build_response_prompt(data)
 
     body = {
-        "anthropic_version": "bedrock-2023-05-31",
+        "anthropic_version": ANTHROPIC_VERSION,
         "max_tokens": 150,
         "messages": [
             {"role": "user", "content": prompt}
