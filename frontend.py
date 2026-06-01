@@ -233,7 +233,7 @@ async def on_message(message: cl.Message):
                 "You can also inspect the network via these dashboards:\n\n"
                 f"  - **Registration Dashboard:** [grafana.{DOMAIN_NAME}/d/reg](https://grafana.{DOMAIN_NAME}/d/reg/reg-dashboard)\n"
                 f"  - **PDU Session Dashboard:** [grafana.{DOMAIN_NAME}/d/pdu](https://grafana.{DOMAIN_NAME}/d/pdu/pdu-dashboard)\n"
-                f"  - **Registration & PDU Session Details:** [webui.free5gc.{DOMAIN_NAME}](https://webui.free5gc.{DOMAIN_NAME})\n"
+                f"  - **Registration & PDU Session Details:** [free5gc.{DOMAIN_NAME}](https://free5gc.{DOMAIN_NAME})\n"
             )
         ).send()
         return
