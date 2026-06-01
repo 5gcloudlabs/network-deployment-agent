@@ -3,6 +3,7 @@ import boto3
 import json
 
 from prompts import build_extract_prompt
+from constants import ANTHROPIC_VERSION
 
 BEDROCK_REGION = os.environ.get("BEDROCK_REGION") or os.environ.get("AWS_DEFAULT_REGION")
 BEDROCK_MODEL_ID = os.environ.get("BEDROCK_MODEL_ID")
@@ -27,7 +28,7 @@ def extract_params(user_message, expected_params, current_params=None):
     prompt = build_extract_prompt(expected_params, user_message)
 
     body = {
-        "anthropic_version": "bedrock-2023-05-31",
+        "anthropic_version": ANTHROPIC_VERSION,
         "max_tokens": 100,
         "messages": [
             {"role": "user", "content": prompt}
