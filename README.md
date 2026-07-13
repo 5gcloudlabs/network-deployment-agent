@@ -1,2 +1,4 @@
 # network-deployment-agent
-AI-assisted 5G network deployment and provisioning through a natural language interface.
+An AI-powered operational interface for deploying and provisioning cloud-native 5G network environments.
+
+
