@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from backend.bedrock_client import call_bedrock
+from backend.deployment_catalog import get_catalog
 from backend.param_extractor import extract_params
 from backend.response_generator import generate_response
 from backend.status import (
@@ -38,14 +39,14 @@ def chat(request: dict):
         if STATE["workflow"] is None:
             return {"message": "No active deployment. You can start by deploying a 5G core."}
 
-        from backend.workflows_registry import STEP_LABELS, WORKFLOWS
-
-        next_step = WORKFLOWS[STATE["workflow"]].get("next_step")
+        catalog = get_catalog()
+        option = catalog.get_option(STATE["workflow"])
+        next_step = option.get("next_step") if option else None
 
         if not next_step:
             return {"message": "No further steps required."}
 
-        label = STEP_LABELS.get(next_step, next_step)
+        label = catalog.step_labels.get(next_step, next_step)
 
         return {
             "message": f"The next step is: {label}"

@@ -1,6 +1,22 @@
 import json
 
-INTENT_SYSTEM_PROMPT = """
+
+def build_intent_system_prompt(catalog) -> str:
+    single_step_lines = []
+    for option in catalog.options_by_category("single-step"):
+        params = ", ".join(option["required_params"])
+        single_step_lines.append(
+            f"- {option['id']} → {option['description']} (requires {params})"
+        )
+
+    workflow_lines = []
+    for option in catalog.options_by_category("workflow"):
+        params = ", ".join(option["required_params"])
+        workflow_lines.append(
+            f"- {option['id']} → {option['description']} (requires {params})"
+        )
+
+    return f"""
 You are a telecom orchestration engine.
 
 Your task:
@@ -8,14 +24,10 @@ Your task:
 - Extract ONLY parameters that are explicitly stated in the user message
 
 Single-step applications (deployed individually via kubectl):
-- free5gc      → deploy 5G core only (requires mcc, mnc)
-- sub-prov     → provision subscribers only (requires mcc, mnc, count)
-- ueransim     → deploy RAN and UE simulation only (requires mcc, mnc, count)
+{chr(10).join(single_step_lines)}
 
 Combined workflows (multi-step, executed as a single Argo Workflow):
-- 5gcore-sub-prov  → deploy 5G core AND provision subscribers in one shot (requires mcc, mnc, count)
-- sub-prov-ueransim → provision subscribers AND deploy UE/RAN simulation (5G core already deployed) (requires mcc, mnc, count)
-- 5g-solution      → deploy 5G core, provision subscribers AND deploy UE/RAN simulation (requires mcc, mnc, count)
+{chr(10).join(workflow_lines)}
 
 Rules:
 - Always return a tool_use response
@@ -27,9 +39,9 @@ Rules:
 
 EXAMPLE:
 User: "deploy 5g core and create 10 subs"
-Correct output: {"workflow": "5gcore-sub-prov", "parameters": {"count": 10}}
+Correct output: {{"workflow": "5gcore-sub-prov", "parameters": {{"count": 10}}}}
 Reason: mcc and mnc were not mentioned → omit them completely
-"""
+""".strip()
 
 
 def build_extract_prompt(expected_params, user_message):
@@ -79,14 +91,8 @@ def build_response_prompt(data):
 
        👉 Next step: <step>"
 
-    3. If cnf_status is NOT present:
-       → Omit "Current status" section
+    3. If status = "error":
+       → Explain the issue simply and suggest what the operator can try next
 
-    4. If next_step exists:
-       → Show ONLY that step, framed as a friendly suggestion
-
-    5. Never include:
-       - "I'm here to help"
-       - "let me know if you need anything"
-       - lengthy explanations
-    """
+    Return ONLY the message text. No JSON, no markdown code fences.
+    """.strip()
