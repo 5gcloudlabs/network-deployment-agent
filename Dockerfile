@@ -13,10 +13,18 @@ RUN apt-get update && \
 
 WORKDIR /app
 
+ENV PYTHONPATH=/app
+
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY *.py ./
-COPY chainlit.md .
+COPY backend/ ./backend/
+COPY frontend/ ./frontend/
+COPY prompts/ ./prompts/
+
+# Root entrypoints for platform Helm chart commands (uvicorn main:app, chainlit run frontend.py)
+RUN ln -sf backend/main.py main.py && \
+    ln -sf frontend/frontend.py frontend.py && \
+    ln -sf frontend/chainlit.md chainlit.md
 
 EXPOSE 8000 8080

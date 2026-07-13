@@ -1,6 +1,6 @@
-from workflows_registry import WORKFLOWS, STEP_LABELS
-from argocd_registry import ARGOCD_APPS
-from workflow import generate_workflow, submit_workflow, kubectl_apply
+from backend.argocd_registry import ARGOCD_APPS
+from backend.workflow import generate_workflow, kubectl_apply, submit_workflow
+from backend.workflows_registry import STEP_LABELS, WORKFLOWS
 
 
 def lookup_workflow(workflow_name):

@@ -8,5 +8,5 @@ __pycache__/
 k8s/
 Dockerfile
 .dockerignore
-*.md
-!chainlit.md
+.work/
+tests/__pycache__/

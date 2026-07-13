@@ -1,4 +1,4 @@
-name: Build and Push AI Agent Image
+name: Build and Push Network Deployment Agent Image
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: 5g-cloud-labs/ai-agent
+  IMAGE_NAME: 5gcloudlabs/network-deployment-agent
 
 jobs:
   build-and-push:

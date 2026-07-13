@@ -1,9 +1,15 @@
 from fastapi import FastAPI
-from bedrock_client import call_bedrock
-from workflow_executor import execute_workflow
-from param_extractor import extract_params
-from response_generator import generate_response
-from status import free5gc_core_status, ueransim_status, subscriber_provisioning_stdout, run_latency_test
+
+from backend.bedrock_client import call_bedrock
+from backend.param_extractor import extract_params
+from backend.response_generator import generate_response
+from backend.status import (
+    free5gc_core_status,
+    run_latency_test,
+    subscriber_provisioning_stdout,
+    ueransim_status,
+)
+from backend.workflow_executor import execute_workflow
 
 app = FastAPI()
 
@@ -32,7 +38,7 @@ def chat(request: dict):
         if STATE["workflow"] is None:
             return {"message": "No active deployment. You can start by deploying a 5G core."}
 
-        from workflows_registry import WORKFLOWS, STEP_LABELS
+        from backend.workflows_registry import STEP_LABELS, WORKFLOWS
 
         next_step = WORKFLOWS[STATE["workflow"]].get("next_step")
 

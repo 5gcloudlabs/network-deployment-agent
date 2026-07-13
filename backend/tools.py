@@ -1,4 +1,4 @@
-from workflow import generate_workflow, submit_workflow
+from backend.workflow import generate_workflow, submit_workflow
 
 
 def deploy_core(mcc, mnc):

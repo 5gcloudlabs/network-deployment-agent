@@ -2,8 +2,8 @@ import os
 import boto3
 import json
 
+from backend.constants import ANTHROPIC_VERSION
 from prompts import INTENT_SYSTEM_PROMPT
-from constants import ANTHROPIC_VERSION
 
 BEDROCK_REGION = os.environ.get("BEDROCK_REGION") or os.environ.get("AWS_DEFAULT_REGION")
 BEDROCK_MODEL_ID = os.environ.get("BEDROCK_MODEL_ID")
