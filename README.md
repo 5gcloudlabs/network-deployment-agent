@@ -213,8 +213,9 @@ Key runtime configuration (provided by the platform Helm chart):
 | `AWS_DEFAULT_REGION` | AWS region for cluster and API calls |
 | `BEDROCK_REGION` | AWS region for Amazon Bedrock |
 | `BEDROCK_MODEL_ID` | LLM model or inference profile (default: Claude Haiku 4.5) |
-| `GITHUB_RAW_BASE` | Base URL for fetching platform deployment manifests |
+| `GITHUB_RAW_BASE` | Base URL for fetching platform deployment manifests (public repo; no token required) |
 | `DEPLOYMENT_CATALOG_PATH` | Path to deployment catalog YAML in the platform repo (default: `5g/deployment-catalog.yaml`) |
+| `GITHUB_TOKEN` | Optional; only needed if the platform repository is private |
 | `ARGO_WF_BASE_PATH` | Argo Workflow manifest path under the platform repo |
 | `ARGOCD_APPS_BASE_PATH` | Argo CD Application manifest path under the platform repo |
 | `CORE_NAMESPACE` | Free5GC namespace (default: `free5gc`) |

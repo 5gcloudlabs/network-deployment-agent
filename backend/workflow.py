@@ -12,12 +12,20 @@ except ImportError:
 
 
 def fetch_template(github_path):
-    """Fetch a raw file from the private GitHub repo."""
-    github_token = os.getenv("GITHUB_TOKEN")
-    github_raw_base = os.getenv("GITHUB_RAW_BASE")
+    """Fetch a raw file from the platform repository via GITHUB_RAW_BASE.
 
-    url = f"{github_raw_base}/{github_path}"
-    headers = {"Authorization": f"token {github_token}"}
+    Public platform repos need no authentication. If GITHUB_TOKEN is set,
+    it is sent as an optional Authorization header (for private platforms).
+    """
+    github_raw_base = os.getenv("GITHUB_RAW_BASE")
+    if not github_raw_base:
+        raise RuntimeError("GITHUB_RAW_BASE is not set")
+
+    url = f"{github_raw_base.rstrip('/')}/{github_path.lstrip('/')}"
+    headers = {}
+    github_token = os.getenv("GITHUB_TOKEN")
+    if github_token:
+        headers["Authorization"] = f"token {github_token}"
 
     response = httpx.get(url, headers=headers, timeout=10)
     response.raise_for_status()
